@@ -1,0 +1,68 @@
+{% extends 'ciscoadmin/base.html' %}
+{% block content %}
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Address</th>
+            <th scope="col">Online</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for object in object_list %}
+            <tr id="{{ object.pk }}">
+                <td>
+                    <button type="button" class="btn btn-outline-dark btn-sm device-button"
+                            {% if object.online == 0 %}disabled{% endif %}
+                            data-button="{{ object.pk }}"
+                            onclick="window.location.href='{% url 'info' object.pk %}';">{{ object.name }}</button>
+                </td>
+                <td>{{ object.ip_address }}</td>
+                <td>
+                    <span class="badge {% if object.online == 1 %}bg-success{% else %}bg-danger{% endif %}"
+                          data-badge="{{ object.pk }}"> </span>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'create_device' %}" type="button" class="btn btn-primary btn-sm">Add device</a>
+    <button id="check" class="btn btn-primary btn-sm" type="button">
+        <span id="spinner" role="status" aria-hidden="true"></span>
+        Check Devices
+    </button>
+
+
+    <script>
+        const deviceButtons = document.querySelectorAll('.device-button')
+        const badges = document.querySelectorAll('.badge')
+        const spin = document.querySelector('#spinner')
+        document.querySelector('#check').addEventListener('click', () => {
+            addValuesToForm()
+        })
+
+        function addValuesToForm() {
+            spin.classList.toggle('spinner-border')
+            spin.classList.toggle('spinner-border-sm')
+            let url = "{% url 'check_online' %}"
+            fetch(url).then(function (response) {
+                response.json().then(function (data) {
+                    spin.classList.toggle('spinner-border')
+                    spin.classList.toggle('spinner-border-sm')
+                    deviceButtons.forEach(element => {
+                        if ((data.devices).includes(parseInt(element.dataset.button))) {
+                            element.disabled = false
+                        }
+                    });
+                    badges.forEach(element => {
+                        if ((data.devices).includes(parseInt(element.dataset.badge))) {
+                            element.classList.remove('bg-danger')
+                            element.classList.add('bg-success')
+                        }
+                    });
+                })
+                document.location.reload();
+            })
+        }
+    </script>
+{% endblock %}

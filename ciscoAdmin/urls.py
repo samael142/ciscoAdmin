@@ -15,9 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import index
+from mainapp.views import Index, DeviceCreateView, GetDeviceInfoView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', index.as_view(), name='index'),
+    path('', Index.as_view(), name='index'),
+    path('create_device/', DeviceCreateView.as_view(), name='create_device'),
+    path('device/<int:pk>', GetDeviceInfoView.as_view(), name='info'),
+    path('device/check_online/', Index.check_online, name='check_online'),
 ]

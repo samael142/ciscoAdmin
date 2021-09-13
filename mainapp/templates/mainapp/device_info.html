@@ -1,0 +1,32 @@
+{% extends 'ciscoadmin/base.html' %}
+{% block content %}
+    {% if dmvpn != "Object not found" %}
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">NBMA</th>
+                <th scope="col">TunnelAddress</th>
+                <th scope="col">State</th>
+                <th scope="col">Reset</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for object in dmvpn %}
+            {% if device.hub == 0 and object.attribute == 'S' or device.hub == 1 %}
+                    <tr>
+                        <td>{{ object.peer_nbma }}</td>
+                        <td>{{ object.peer_tunnel }}</td>
+                        <td>{{ object.state }}</td>
+                        <td>
+                            <a href="#" type="button" class="btn btn-primary btn-sm">Reset</a>
+                        </td>
+                    </tr>
+            {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        {{ dmvpn }}
+    {% endif %}
+
+{% endblock %}
